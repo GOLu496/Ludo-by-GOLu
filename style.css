@@ -1,58 +1,171 @@
-body {
-  margin: 0;
-  background: #f0f0f0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* style.css */
+
+/* Reset and base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
 }
 
-.game-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+body, html {
+    height: 100%;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e9e7dc;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
 }
 
 .ads {
-  width: 120px;
-  background: #ccc;
-  text-align: center;
-  padding: 10px;
-  font-size: 14px;
-  display: none; /* Hide ads on mobile */
+    width: 100px;
+    background: #c0c0c0;
+    color: #444;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: text;
 }
 
-.board {
-  width: 600px;
-  height: 600px;
-  background: url('board.jpg') no-repeat center/cover; /* Apna board image yahan lagao */
-  position: relative;
+/* Hide ads on mobile */
+@media (max-width: 768px) {
+    #ads-left, #ads-right {
+        display: none;
+    }
 }
 
+/* Main content area */
+#main-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Board container */
+#board-container {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.15);
+    overflow: visible;
+}
+
+#board-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 20px;
+}
+
+/* Tokens container (absolute layer over board) */
+#tokens-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    pointer-events: none; /* token interaction enabled individually */
+}
+
+/* Token style */
 .token {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  position: absolute;
-  border: 2px solid #000;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    cursor: pointer;
+    pointer-events: auto;
+    transition: box-shadow 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    user-select: none;
+}
+.token.red { background-color: #d32f2f; }
+.token.blue { background-color: #1565c0; }
+.token.green { background-color: #2e7d32; }
+.token.yellow { background-color: #fbc02d; color: #444; }
+
+/* Highlight tokens with possible moves */
+.token.highlight {
+    box-shadow: 0 0 10px 4px gold;
+    z-index: 10;
 }
 
-.token.red { background: url('red.png'no-repeat center/cover; }
-.token.blue { background: url('blue.png'no-repeat center/cover; }
-.token.green { background: url('green.png'no-repeat center/cover; }
-.token.yellow { background: url('yellow.png'no-repeat center/cover; }
-
-.dice {
-  margin-top: 20px;
-  font-size: 24px;
+/* UI panel below the board */
+#ui-panel {
+    margin-top: 20px;
+    width: 600px;
+    text-align: center;
+    user-select: none;
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 18px;
-  cursor: pointer;
+#info {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
 }
 
-@media (min-width: 900px) {
-  .ads { display: block; } /* Show ads on desktop */
+#roll-dice-btn {
+    font-size: 1.2rem;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    background-color: #3b82f6;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#roll-dice-btn:disabled {
+    background-color: #a1a1a1;
+    cursor: default;
+}
+
+#roll-dice-btn:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+#message {
+    margin-top: 12px;
+    font-size: 1rem;
+    min-height: 24px;
+    color: #444;
+}
+
+/* Responsive and scaling for smaller screens */
+@media (max-width: 768px) {
+    #board-container {
+        width: 100vw;
+        height: 100vw; /* square */
+        border-radius: 0;
+    }
+
+    #tokens-container {
+        width: 100vw;
+        height: 100vw;
+    }
+
+    #ui-panel {
+        width: 100vw;
+        margin-top: 10px;
+        padding: 0 10px;
+    }
+
+    #roll-dice-btn {
+        width: 100%;
+    }
 }
