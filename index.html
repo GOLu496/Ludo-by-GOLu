@@ -1,37 +1,259 @@
-<!-- index.html -->
+<h2 style="font-family: Arial, sans-serif; font-size: 30; text-align: center; margin-top: 10px; margin-bottom: 10px; margin-left: 50px; margin-right: 10px; ">
+  Ludo by 
+  <a href="https://youtube.com/@golutheghost-4444?si=cUJvKGET1Bx-nS3m" target="_blank" style="color: red; text-decoration: none;">
+    GOLu the GhosT
+  </a>
+</h2>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <title>Official Ludo Game</title>
-    <link rel="stylesheet" href="style.css" />
+<style>
+  /* Invisible outer container */
+  .board-container {
+    width: fit-content;
+    height: fit-content;
+    display: inline-block;
+    position: relative;
+    visibility: visible;
+margin-right: 10px;    /* Hide करने के लिए इसे hidden कर देना */
+  }
+
+  .big-square {
+    width: 600px;
+    height: 600px;
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+    border: 3px solid black;
+    border-radius: 20px;
+    overflow: hidden;
+    position: centre;
+  }
+  .small-square {
+    border: 1px solid gray;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: transparent;
+  }
+  .corner-color, .center-color { border: none; }
+  .corner-color { background-color: lightblue; }
+  .center-color { background-color: lightgreen; }
+
+  /* Rounded edges */
+  .tl-top-left { border-top-left-radius: 15px; }
+  .tl-top-right { border-top-right-radius: 15px; }
+  .tl-bottom-left { border-bottom-left-radius: 15px; }
+  .tl-bottom-right { border-bottom-right-radius: 15px; }
+  .tr-top-left { border-top-left-radius: 15px; }
+  .tr-top-right { border-top-right-radius: 15px; }
+  .tr-bottom-left { border-bottom-left-radius: 15px; }
+  .tr-bottom-right { border-bottom-right-radius: 15px; }
+  .bl-top-left { border-top-left-radius: 15px; }
+  .bl-top-right { border-top-right-radius: 15px; }
+  .bl-bottom-left { border-bottom-left-radius: 15px; }
+  .bl-bottom-right { border-bottom-right-radius: 15px; }
+  .br-top-left { border-top-left-radius: 15px; }
+  .br-top-right { border-top-right-radius: 15px; }
+  .br-bottom-left { border-bottom-left-radius: 15px; }
+  .br-bottom-right { border-bottom-right-radius: 15px; }
+  .c-top-left { border-top-left-radius: 10px; }
+  .c-top-right { border-top-right-radius: 10px; }
+  .c-bottom-left { border-bottom-left-radius: 10px; }
+  .c-bottom-right { border-bottom-right-radius: 10px; }
+
+  /* Circles */
+  .circle {
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .red-circle { background-color: red;  }
+  .green-circle { background-color: green; }
+  .blue-circle { background-color: blue; }
+  .yellow-circle { background-color: gold; }
+
+  /* Dice layer */
+  .dice-layer {
+    position: absolute;
+    width: calc((640px / 15) * 2);
+    height: calc((640px / 15) * 2);
+    background: white;
+    border: 2px solid black;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    transition: top 0.3s, left 0.3s;
+    box-sizing: border-box;
+  }
+</style>
 </head>
 <body>
-    <div id="container">
-        <aside id="ads-left" class="ads">Ads Space</aside>
 
-        <main id="main-content">
-            <div id="board-container">
-                <img src="assets/board.jpg" id="board-img" alt="Ludo Board" />
-                <div id="tokens-container">
-                    <!-- Tokens will be dynamically created here -->
-                </div>
-            </div>
+<div class="board-container">
+  <div class="big-square" id="grid"></div>
+  <div class="dice-layer" id="dice">🎲</div>
+</div>
 
-            <div id="ui-panel">
-                <div id="info">
-                    <div>Current Turn: <span id="current-player-name">Red</span></div>
-                    <div>Dice Roll: <span id="dice-result">-</span></div>
-                </div>
+<script>
+const grid = document.getElementById("grid");
+const diceLayer = document.getElementById("dice");
+const size = 15;
+let num = 1;
 
-                <button id="roll-dice-btn">Roll Dice</button>
-                <div id="message"></div>
-            </div>
-        </main>
+// Dice positions (exact 2x2 cell corners)
+const dicePositions = [
+  {row: 0, col: 0},      // top-left
+  {row: 0, col: 13},     // top-right
+  {row: 13, col: 13},    // bottom-right
+  {row: 13, col: 0}      // bottom-left
+];
+let currentPos = 0;
 
-        <aside id="ads-right" class="ads">Ads Space</aside>
-    </div>
-    <script src="game.js"></script>
+// Circle positions
+const redPos = [20, 50, 62, 64];
+const greenPos = [26, 56, 72, 74];
+const bluePos = [162, 164, 176, 206];
+const yellowPos = [152, 154, 170, 200];
+
+// Target blocks for each color
+const redTarget = 92;
+const greenTarget = 24;
+const blueTarget = 134;
+const yellowTarget = 202;
+
+// Function to move token to specific block
+function moveTokenTo(targetBlock, tokenEl) {
+  const allCells = document.querySelectorAll(".small-square");
+  const targetCell = [...allCells].find(c => parseInt(c.textContent) === targetBlock);
+  if (targetCell) {
+    targetCell.appendChild(tokenEl);
+  }
+}
+
+// Create grid
+for (let row = 0; row < size; row++) {
+  for (let col = 0; col < size; col++) {
+    let div = document.createElement("div");
+    div.classList.add("small-square");
+    div.textContent = num;
+
+    // Corner colors
+    if (row < 6 && col < 6) {
+      div.classList.add("corner-color");
+      if (row === 0 && col === 0) div.classList.add("tl-top-left");
+      if (row === 0 && col === 5) div.classList.add("tl-top-right");
+      if (row === 5 && col === 0) div.classList.add("tl-bottom-left");
+      if (row === 5 && col === 5) div.classList.add("tl-bottom-right");
+    }
+    if (row < 6 && col >= size - 6) {
+      div.classList.add("corner-color");
+      if (row === 0 && col === 9) div.classList.add("tr-top-left");
+      if (row === 0 && col === 14) div.classList.add("tr-top-right");
+      if (row === 5 && col === 9) div.classList.add("tr-bottom-left");
+      if (row === 5 && col === 14) div.classList.add("tr-bottom-right");
+    }
+    if (row >= size - 6 && col < 6) {
+      div.classList.add("corner-color");
+      if (row === 9 && col === 0) div.classList.add("bl-top-left");
+      if (row === 9 && col === 5) div.classList.add("bl-top-right");
+      if (row === 14 && col === 0) div.classList.add("bl-bottom-left");
+      if (row === 14 && col === 5) div.classList.add("bl-bottom-right");
+    }
+    if (row >= size - 6 && col >= size - 6) {
+      div.classList.add("corner-color");
+      if (row === 9 && col === 9) div.classList.add("br-top-left");
+      if (row === 9 && col === 14) div.classList.add("br-top-right");
+      if (row === 14 && col === 9) div.classList.add("br-bottom-left");
+      if (row === 14 && col === 14) div.classList.add("br-bottom-right");
+    }
+    // Center
+    if (row >= 6 && row <= 8 && col >= 6 && col <= 8) {
+      div.classList.add("center-color");
+      if (row === 6 && col === 6) div.classList.add("c-top-left");
+      if (row === 6 && col === 8) div.classList.add("c-top-right");
+      if (row === 8 && col === 6) div.classList.add("c-bottom-left");
+      if (row === 8 && col === 8) div.classList.add("c-bottom-right");
+    }
+
+    // Place circles
+    if (redPos.includes(num)) {
+      let circle = document.createElement("div");
+      circle.classList.add("circle", "red-circle");
+      circle.onclick = () => moveTokenTo(redTarget, circle);
+      div.innerHTML = "";
+      div.appendChild(circle);
+    }
+    if (greenPos.includes(num)) {
+      let circle = document.createElement("div");
+      circle.classList.add("circle", "green-circle");
+      circle.onclick = () => moveTokenTo(greenTarget, circle);
+      div.innerHTML = "";
+      div.appendChild(circle);
+    }
+    if (bluePos.includes(num)) {
+      let circle = document.createElement("div");
+      circle.classList.add("circle", "blue-circle");
+      circle.onclick = () => moveTokenTo(blueTarget, circle);
+      div.innerHTML = "";
+      div.appendChild(circle);
+    }
+    if (yellowPos.includes(num)) {
+      let circle = document.createElement("div");
+      circle.classList.add("circle", "yellow-circle");
+      circle.onclick = () => moveTokenTo(yellowTarget, circle);
+      div.innerHTML = "";
+      div.appendChild(circle);
+    }
+
+    grid.appendChild(div);
+    num++;
+  }
+}
+
+// Position dice layer initially
+moveDice();
+
+diceLayer.onclick = () => {
+  let roll = Math.floor(Math.random() * 6) + 1;
+  diceLayer.textContent = roll;
+  setTimeout(() => {
+    currentPos = (currentPos + 1) % dicePositions.length;
+    moveDice();
+    diceLayer.textContent = "🎲";
+  }, 500);
+};
+
+function moveDice() {
+  const cellSize = 600 / 15;
+  let pos = dicePositions[currentPos];
+  diceLayer.style.top = (pos.row * cellSize) + "px";
+  diceLayer.style.left = (pos.col * cellSize) + "px";
+}
+
+// Ludo token movement loop path
+const loopPath = [
+  91, 92, 93, 94, 95, 96, 
+  82, 67, 52, 37, 22, 7, 
+  8, 9, 24, 39, 54, 69, 84, 
+  100, 101, 102, 103, 104, 105, 
+  120, 135, 134, 133, 132, 131, 130, 
+  144, 159, 174, 189, 204, 219, 
+  218, 217, 202, 187, 172, 157, 142, 
+  126, 125, 124, 123, 122, 121, 106
+];
+  
+</script>
+
 </body>
 </html>
