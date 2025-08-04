@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ludo Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="game-container">
+  <div class="ads">Ad Space</div>
+
+  <!-- Ludo Board -->
+  <div class="board" id="board">
+    <!-- Tokens -->
+    <div class="token red" id="token-red" style="display:none;"></div>
+    <div class="token blue" id="token-blue" style="display:none;"></div>
+    <div class="token green" id="token-green" style="display:none;"></div>
+    <div class="token yellow" id="token-yellow" style="display:none;"></div>
+  </div>
+
+  <div class="ads">Ad Space</div>
+</div>
+
+<!-- Dice Area -->
+<div class="dice">
+  <div id="dice-result">🎲 Roll the dice</div>
+  <button onclick="rollDice()">Roll Dice</button>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

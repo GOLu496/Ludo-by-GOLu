@@ -1,0 +1,58 @@
+body {
+  margin: 0;
+  background: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ads {
+  width: 120px;
+  background: #ccc;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  display: none; /* Hide ads on mobile */
+}
+
+.board {
+  width: 600px;
+  height: 600px;
+  background: url('board.jpg') no-repeat center/cover; /* Apna board image yahan lagao */
+  position: relative;
+}
+
+.token {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  position: absolute;
+  border: 2px solid #000;
+}
+
+.token.red { background: red; }
+.token.blue { background: blue; }
+.token.green { background: green; }
+.token.yellow { background: yellow; }
+
+.dice {
+  margin-top: 20px;
+  font-size: 24px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+@media (min-width: 900px) {
+  .ads { display: block; } /* Show ads on desktop */
+}
